@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shelfie - My Digital Bookshelf</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Georgia&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <div class="shelf-side">
+      <div id="shelf-unit"></div>
+
+      <div id="add-book-section">
+        <button id="toggle-form-btn">+ Add a Book</button>
+        <form id="add-book-form" class="hidden">
+          <input type="text" id="title" placeholder="Title" required>
+          <input type="text" id="author" placeholder="Author" required>
+          <select id="genre">
+            <option value="Fantasy">Fantasy</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Self-Help">Self-Help</option>
+            <option value="Romance">Romance</option>
+            <option value="Mystery">Mystery</option>
+            <option value="Uncategorized">Uncategorized</option>
+          </select>
+          <input type="number" id="pages" placeholder="Pages">
+          <select id="status">
+            <option value="want to read">Want to Read</option>
+            <option value="reading">Reading</option>
+            <option value="finished">Finished</option>
+          </select>
+          <select id="mood">
+            <option value="">Mood (optional)</option>
+            <option value="😍">😍 Loved it</option>
+            <option value="😊">😊 Liked it</option>
+            <option value="😐">😐 It was okay</option>
+            <option value="😴">😴 Not for me</option>
+          </select>
+          <button type="submit">Add Book</button>
+        </form>
+      </div>
+
+      <div id="details-panel" class="hidden">
+        <h2 id="detail-title"></h2>
+        <p id="detail-author"></p>
+        <p id="detail-genre"></p>
+        <p id="detail-pages"></p>
+        <p id="detail-status"></p>
+        <p id="detail-mood"></p>
+        <div class="detail-actions">
+          <button id="delete-book-btn">Delete</button>
+          <button id="close-detail-btn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="title-side">
+      <h1>Shelfie</h1>
+      <p>your personal digital bookshelf</p>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

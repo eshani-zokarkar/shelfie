@@ -6,16 +6,13 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.static('public'));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
 const Book = require('./models/Book');
-
-app.get('/', (req, res) => {
-  res.send('Shelfie server is running!');
-});
 
 app.get('/books', async (req, res) => {
   try {
@@ -35,7 +32,7 @@ app.post('/books', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-// UPDATE a book
+
 app.put('/books/:id', async (req, res) => {
   try {
     const updatedBook = await Book.findByIdAndUpdate(
@@ -51,7 +48,7 @@ app.put('/books/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
-// DELETE a book
+
 app.delete('/books/:id', async (req, res) => {
   try {
     const deletedBook = await Book.findByIdAndDelete(req.params.id);
@@ -63,25 +60,22 @@ app.delete('/books/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-// GET reading stats
+
 app.get('/stats', async (req, res) => {
   try {
     const totalBooks = await Book.countDocuments();
     const finishedBooks = await Book.countDocuments({ status: 'finished' });
 
-    // Genre breakdown
     const genreStats = await Book.aggregate([
       { $group: { _id: '$genre', count: { $sum: 1 } } }
     ]);
 
-    // Total pages read (only finished books)
     const pagesResult = await Book.aggregate([
       { $match: { status: 'finished' } },
       { $group: { _id: null, totalPages: { $sum: '$pages' } } }
     ]);
     const totalPages = pagesResult[0]?.totalPages || 0;
 
-    // Books finished per month
     const monthlyStats = await Book.aggregate([
       { $match: { status: 'finished' } },
       {
