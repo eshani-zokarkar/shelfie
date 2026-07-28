@@ -35,6 +35,75 @@ app.post('/books', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+// UPDATE a book
+app.put('/books/:id', async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+    res.json(updatedBook);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+// DELETE a book
+app.delete('/books/:id', async (req, res) => {
+  try {
+    const deletedBook = await Book.findByIdAndDelete(req.params.id);
+    if (!deletedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+    res.json({ message: 'Book deleted successfully', deletedBook });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+// GET reading stats
+app.get('/stats', async (req, res) => {
+  try {
+    const totalBooks = await Book.countDocuments();
+    const finishedBooks = await Book.countDocuments({ status: 'finished' });
+
+    // Genre breakdown
+    const genreStats = await Book.aggregate([
+      { $group: { _id: '$genre', count: { $sum: 1 } } }
+    ]);
+
+    // Total pages read (only finished books)
+    const pagesResult = await Book.aggregate([
+      { $match: { status: 'finished' } },
+      { $group: { _id: null, totalPages: { $sum: '$pages' } } }
+    ]);
+    const totalPages = pagesResult[0]?.totalPages || 0;
+
+    // Books finished per month
+    const monthlyStats = await Book.aggregate([
+      { $match: { status: 'finished' } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m', date: '$dateAdded' } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    res.json({
+      totalBooks,
+      finishedBooks,
+      totalPages,
+      genreStats,
+      monthlyStats
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
